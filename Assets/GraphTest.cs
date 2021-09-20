@@ -20,14 +20,14 @@ public class GraphTest : MonoBehaviour
         Path cd = new Path(C, D, 2f);
         Path de = new Path(D, E, 7f);
 
-        Graph test = new Graph();
-        test.addAllNodes(A, B, C, D, E);
-        test.addAllPaths(ab, ac, bc, bd, be, cd, de);
-
-        Debug.Log(test);
+        Graph example1 = new Graph();
+        example1.addAllNodes(A, B, C, D, E);
+        example1.addAllPaths(ab, ac, bc, bd, be, cd, de);
+        
+        Debug.Log(example1);
 
         Dijkstra d = new Dijkstra();
-        d.Run(test, 0);
+        d.Run(example1, 0);
     }
 
 }
