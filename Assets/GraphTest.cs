@@ -4,6 +4,10 @@ using UnityEngine;
 public class GraphTest : MonoBehaviour
 {
 
+    public Material src, dest, def, path;
+
+    public GameObject[] cubes;
+
     private void Start()
     {
         Node A = new Node("A");
@@ -28,6 +32,16 @@ public class GraphTest : MonoBehaviour
 
         Dijkstra d = new Dijkstra();
         d.Run(example1, 0);
+
+        Node destination = E;
+
+        foreach (GameObject g in cubes)
+        {
+            g.GetComponent<MeshRenderer>().material = def;
+        }
+
+        cubes[0].GetComponent<MeshRenderer>().material = src;
+        cubes[example1.getIndex(destination)].GetComponent<MeshRenderer>().material = dest;
     }
 
 }
