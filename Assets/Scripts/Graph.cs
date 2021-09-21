@@ -89,4 +89,21 @@ public class Graph
         paths = new List<Path>();
     }
 
+    public Graph(string filename)
+    {
+        nodes = new List<Node>();
+        paths = new List<Path>();
+
+        string[] lines = System.IO.File.ReadAllLines(filename);
+        foreach (string line in lines)
+        {
+            string[] path = line.Split(' ');
+            Node src = new Node(path[0]);
+            Node dest = new Node(path[1]);
+            if (!nodes.Contains(src)) nodes.Add(src);
+            if (!nodes.Contains(dest)) nodes.Add(dest);
+            paths.Add(new Path(src, dest, float.Parse(path[2])));
+        }
+    }
+
 }

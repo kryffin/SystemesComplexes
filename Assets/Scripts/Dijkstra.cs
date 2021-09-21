@@ -7,7 +7,7 @@ public class Dijkstra
     private Graph g;
 
     private float[] distances;
-    private Node[] previous;
+    public Node[] previous;
     private HashSet<Node> Q;
 
     private void Init(int source)
