@@ -12,44 +12,40 @@ public class MeshGenerator : MonoBehaviour
     int[] triangles;
     public Color[] colors;
 
-    public int xSize = 20;
-    public int zSize = 20;
-    private float offset = 0.4f;
+    private int xSize;
+    private int zSize;
 
     public Gradient gradient;
-
-    float minHeight;
-    float maxHeight;
 
     public Vector3 GetVerticePosition(int index)
     {
         return vertices[index];
     }
 
-    public void Init()
+    public void Init(int width, int height, float magnitude)
     {
+        xSize = width;
+        zSize = height;
+
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
 
-        CreateShape();
+        CreateShape(magnitude);
         UpdateMesh();
     }
 
-    void CreateShape()
+    void CreateShape(float magnitude)
     {
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
+
+        float variation = Random.Range(.1f, .3f);
 
         for (int i = 0, z = 0; z <= zSize; z++)
         {
             for (int x = 0; x <= xSize; x++)
             {
-                float y = Mathf.PerlinNoise(x * .3f, z * .3f) * 4f;
-                vertices[i] = new Vector3(x, y + (z * offset), z);
-
-                if (y + z * offset > maxHeight)
-                    maxHeight = y + z * offset;
-                if (y + z * offset < minHeight)
-                    minHeight = y + z * offset;
+                float y = Mathf.PerlinNoise(x * variation, z * variation) * magnitude;
+                vertices[i] = new Vector3(x, y, z);
 
                 i++;
             }
@@ -83,7 +79,7 @@ public class MeshGenerator : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++)
             {
-                float height = Mathf.InverseLerp(minHeight, maxHeight, vertices[i].y);
+                float height = Mathf.InverseLerp(0f, magnitude, vertices[i].y);
                 colors[i] = gradient.Evaluate(height);
                 i++;
             }
@@ -100,11 +96,6 @@ public class MeshGenerator : MonoBehaviour
         mesh.colors = colors;
 
         mesh.RecalculateNormals();
-    }
-
-    private void FixedUpdate()
-    {
-        Debug.DrawLine(vertices[0], vertices[1]);
     }
 
     private void OnDrawGizmos()

@@ -113,7 +113,7 @@ public class GraphTest : MonoBehaviour
 
         updatePaths();
 
-        d.Run(example1, 0);
+        d.Run(example1, new Node(0 + ""));
 
         // calcul chemin le plus court
 

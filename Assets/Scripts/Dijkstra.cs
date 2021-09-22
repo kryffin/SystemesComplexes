@@ -90,10 +90,10 @@ public class Dijkstra
         return nodes;
     }
 
-    public void Run(Graph g, int source)
+    public void Run(Graph g, Node source)
     {
         this.g = g;
-        Init(source);
+        Init(int.Parse(source.name));
 
         foreach (Node n in g.nodes) Q.Add(n);
 
