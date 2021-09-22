@@ -52,7 +52,7 @@ public class GraphTest : MonoBehaviour
             for (int h = 0; h < HEIGHT; h++)
             {
                 example1.nodes.Add(new Node((WIDTH * h + w) + ""));
-                cubes[i] = Instantiate<GameObject>(nodePrefab, new Vector3(w * 2f, 0f, h * 2f), Quaternion.identity);
+                cubes[i] = Instantiate<GameObject>(nodePrefab, new Vector3(w * 2f, 0.5f, h * 2f), Quaternion.identity);
                 cubes[i].name = i + "";
 
                 i++;
@@ -72,6 +72,7 @@ public class GraphTest : MonoBehaviour
     {
         example1 = new Graph();
         destination = new Node((WIDTH * HEIGHT - 1) + "");
+        finalPath = new List<Node>();
 
         initCubes();
         initPaths();
@@ -89,6 +90,23 @@ public class GraphTest : MonoBehaviour
         cubes[int.Parse(destination.name)].GetComponent<MeshRenderer>().material = dest;
     }
 
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit, 20.0f))
+            {
+                //suppose i have two objects here named obj1 and obj2.. how do i select obj1 to be transformed 
+                if (hit.transform != null)
+                {
+                    Debug.Log(hit.transform.name);
+                }
+            }
+        }
+    }
+
     private void FixedUpdate()
     {
         resetCubes();
@@ -100,13 +118,15 @@ public class GraphTest : MonoBehaviour
         // calcul chemin le plus court
 
         Node prc = d.previous[int.Parse(destination.name)];
-        finalPath = new List<Node>();
+        finalPath.Clear();
+        finalPath.Add(destination);
         while (prc != null && prc.name != "0")
         {
             finalPath.Add(prc);
             cubes[int.Parse(prc.name)].GetComponent<MeshRenderer>().material = path;
             prc = d.previous[int.Parse(prc.name)];
         }
+        finalPath.Add(new Node("0"));
 
         // affichage
 
@@ -117,7 +137,7 @@ public class GraphTest : MonoBehaviour
 
         for (int i = 0; i < finalPath.Count-1; i++)
         {
-            Debug.DrawLine(cubes[example1.getIndex(finalPath[i])].transform.position, cubes[example1.getIndex(finalPath[i+1])].transform.position, Color.red);
+            Debug.DrawLine(cubes[int.Parse(finalPath[i].name)].transform.position, cubes[int.Parse(finalPath[i+1].name)].transform.position, Color.red);
         }
     }
 
