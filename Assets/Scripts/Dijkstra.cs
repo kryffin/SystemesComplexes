@@ -6,7 +6,7 @@ public class Dijkstra
 
     private Graph g;
 
-    private float[] distances;
+    public float[] distances;
     public Node[] previous;
     private HashSet<Node> Q;
 
@@ -76,6 +76,20 @@ public class Dijkstra
         Debug.Log("Fin");
     }
 
+    public List<Node> TraceBack (Node n)
+    {
+        List<Node> nodes = new List<Node>();
+        nodes.Add(n);
+        Node cur = n;
+        while (previous[int.Parse(cur.name)] != null)
+        {
+            cur = previous[int.Parse(cur.name)];
+            nodes.Add(cur);
+        }
+
+        return nodes;
+    }
+
     public void Run(Graph g, int source)
     {
         this.g = g;
@@ -92,6 +106,7 @@ public class Dijkstra
             foreach (Path p in g.paths)
             {
                 if (p.from == s1) UpdateDistances(g.getIndex(s1), g.getIndex(p.to));
+                else if (p.to == s1) UpdateDistances(g.getIndex(p.from), g.getIndex(s1));
             }
         }
 
