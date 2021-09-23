@@ -21,21 +21,21 @@ public class DijsktraRiver : MonoBehaviour
 
     private Dijkstra d;
 
-    public InputAction click;
+    public InputAction leftClick;
+    public InputAction rightClick;
     public InputAction mousePosition;
-
-    private int selectedNode = -1;
-    private bool selectingSrc = true;
 
     private void OnEnable()
     {
-        click.Enable();
+        leftClick.Enable();
+        rightClick.Enable();
         mousePosition.Enable();
     }
 
     private void OnDisable()
     {
-        click.Disable();
+        leftClick.Disable();
+        rightClick.Disable();
         mousePosition.Disable();
     }
 
@@ -118,19 +118,33 @@ public class DijsktraRiver : MonoBehaviour
     private void Update()
     {
         // Casts a ray to interact with the first hit object in scene, on click
-        if (click.triggered)
+        if (leftClick.triggered)
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.ReadValue<Vector2>().x, mousePosition.ReadValue<Vector2>().y, .0f));
-            if (Physics.Raycast(ray, out hit, 50f))
+            if (Physics.Raycast(ray, out hit, 100f))
             {
                 if (hit.transform != null)
                 {
-                    if (selectingSrc) src = new Node(hit.transform.name);
-                    else dest = new Node(hit.transform.name);
+                    src = new Node(hit.transform.name);
 
                     UpdatePaths();
-                    selectingSrc = !selectingSrc;
+                    mg.DrawPath(finalPath);
+                }
+            }
+        }
+        else if (rightClick.triggered)
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.ReadValue<Vector2>().x, mousePosition.ReadValue<Vector2>().y, .0f));
+            if (Physics.Raycast(ray, out hit, 100f))
+            {
+                if (hit.transform != null)
+                {
+                    dest = new Node(hit.transform.name);
+
+                    UpdatePaths();
+                    mg.DrawPath(finalPath);
                 }
             }
         }
@@ -138,16 +152,16 @@ public class DijsktraRiver : MonoBehaviour
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.ReadValue<Vector2>().x, mousePosition.ReadValue<Vector2>().y, .0f));
-            if (Physics.Raycast(ray, out hit, 50f))
+            if (Physics.Raycast(ray, out hit, 100f))
             {
                 if (hit.transform != null)
                 {
-                    selectedNode = int.Parse(hit.transform.name);
+                    mg.HoverNode(int.Parse(hit.transform.name));
                 }
-                else
-                {
-                    selectedNode = -1;
-                }
+            }
+            else
+            {
+                mg.DrawPath(finalPath);
             }
         }
     }
@@ -170,35 +184,7 @@ public class DijsktraRiver : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (mg == null) return;
-
-        // Drawing the shortest path
-        Gizmos.color = Color.red;
-        for (int i = 0; i < finalPath.Count - 1; i++)
-        {
-            Gizmos.DrawSphere(mg.GetVerticePosition(int.Parse(finalPath[i].name)), .1f);
-        }
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(mg.GetVerticePosition(int.Parse(src.name)), .1f); //displaying the first node of the path
-
-        //Drawing the hovered node
         Gizmos.color = Color.black;
-        if (selectedNode != -1) Gizmos.DrawSphere(mg.GetVerticePosition(selectedNode), .1f);
-        /*if (selectedNode != -1)
-        {
-        // Colors the selected node (without resetting)
-            mg.colors[selectedNode] = Color.white;
-            mg.UpdateMesh();
-        }*/
+        //if (selectedNode != -1) Gizmos.DrawSphere(mg.GetVerticePosition(selectedNode), .1f);
     }
-
-    private void OnGUI()
-    {
-        // Writing each path's weight
-        foreach (Path p in g.paths)
-        {
-            //Handles.Label((mg.GetVerticePosition(int.Parse(p.from.name)) + mg.GetVerticePosition(int.Parse(p.to.name))) / 2f, p.weight + "");
-        }
-    }
-
 }

@@ -20,6 +20,12 @@ public class MeshGenerator : MonoBehaviour
 
     public GameObject nodeCollider;
 
+    public Material pathMaterial;
+    public Material defaultMaterial;
+    public Material selectedMaterial;
+    public Material sourceMaterial;
+    public Material destinationMaterial;
+
     public Vector3 GetVerticePosition(int index)
     {
         return vertices[index];
@@ -94,6 +100,23 @@ public class MeshGenerator : MonoBehaviour
 
     }
 
+    public void DrawPath(List<Node> path)
+    {
+        for (int i = 0; i < nodeColliders.Length; i++)
+        {
+            if (path.Contains(new Node(i + ""))) nodeColliders[i].GetComponent<MeshRenderer>().material = pathMaterial;
+            else nodeColliders[i].GetComponent<MeshRenderer>().material = defaultMaterial;
+        }
+
+        nodeColliders[int.Parse(path[0].name + "")].GetComponent<MeshRenderer>().material = destinationMaterial;
+        nodeColliders[int.Parse(path[path.Count-1].name + "")].GetComponent<MeshRenderer>().material = sourceMaterial;
+    }
+
+    public void HoverNode(int n)
+    {
+        nodeColliders[n].GetComponent<MeshRenderer>().material = selectedMaterial;
+    }
+
     public void UpdateMesh()
     {
         mesh.Clear();
@@ -103,16 +126,6 @@ public class MeshGenerator : MonoBehaviour
         mesh.colors = colors;
 
         mesh.RecalculateNormals();
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (vertices == null) return;
-
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            Gizmos.DrawSphere(vertices[i], .1f);
-        }
     }
 
 }
