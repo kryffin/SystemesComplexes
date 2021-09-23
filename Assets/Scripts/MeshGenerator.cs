@@ -8,6 +8,7 @@ public class MeshGenerator : MonoBehaviour
 
     Mesh mesh;
 
+    GameObject[] nodeColliders;
     Vector3[] vertices;
     int[] triangles;
     public Color[] colors;
@@ -16,6 +17,8 @@ public class MeshGenerator : MonoBehaviour
     private int zSize;
 
     public Gradient gradient;
+
+    public GameObject nodeCollider;
 
     public Vector3 GetVerticePosition(int index)
     {
@@ -36,6 +39,7 @@ public class MeshGenerator : MonoBehaviour
 
     void CreateShape(float magnitude)
     {
+        nodeColliders = new GameObject[(xSize + 1) * (zSize + 1)];
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
 
         float variation = Random.Range(.1f, .3f);
@@ -45,7 +49,10 @@ public class MeshGenerator : MonoBehaviour
             for (int x = 0; x <= xSize; x++)
             {
                 float y = Mathf.PerlinNoise(x * variation, z * variation) * magnitude;
+                nodeColliders[i] = Instantiate(nodeCollider, new Vector3(x, y, z), Quaternion.identity, this.transform);
+                nodeColliders[i].name = i + "";
                 vertices[i] = new Vector3(x, y, z);
+
 
                 i++;
             }
@@ -87,7 +94,7 @@ public class MeshGenerator : MonoBehaviour
 
     }
 
-    void UpdateMesh()
+    public void UpdateMesh()
     {
         mesh.Clear();
 

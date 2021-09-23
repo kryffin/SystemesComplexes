@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DijsktraRiver : MonoBehaviour
 {
@@ -17,6 +18,26 @@ public class DijsktraRiver : MonoBehaviour
 
     private Node src;
     private Node dest;
+
+    private Dijkstra d;
+
+    public InputAction click;
+    public InputAction mousePosition;
+
+    private int selectedNode = -1;
+    private bool selectingSrc = true;
+
+    private void OnEnable()
+    {
+        click.Enable();
+        mousePosition.Enable();
+    }
+
+    private void OnDisable()
+    {
+        click.Disable();
+        mousePosition.Disable();
+    }
 
     // Initializes every nodes
     private void InitNodes()
@@ -69,6 +90,12 @@ public class DijsktraRiver : MonoBehaviour
         }
     }
 
+    private void UpdatePaths()
+    {
+        d.Run(g, src);
+        finalPath = d.TraceBack(dest);
+    }
+
     void Start()
     {
         mg = GetComponent<MeshGenerator>();
@@ -79,13 +106,50 @@ public class DijsktraRiver : MonoBehaviour
         InitNodes();
         InitPaths();
 
-        Dijkstra d = new Dijkstra();
+        d = new Dijkstra();
         src = new Node(Random.Range(width * (height - 1), width * height) + "");
         d.Run(g, src);
 
         dest = new Node(Random.Range(0, width) + "");
 
         finalPath = d.TraceBack(dest);
+    }
+
+    private void Update()
+    {
+        // Casts a ray to interact with the first hit object in scene, on click
+        if (click.triggered)
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.ReadValue<Vector2>().x, mousePosition.ReadValue<Vector2>().y, .0f));
+            if (Physics.Raycast(ray, out hit, 50f))
+            {
+                if (hit.transform != null)
+                {
+                    if (selectingSrc) src = new Node(hit.transform.name);
+                    else dest = new Node(hit.transform.name);
+
+                    UpdatePaths();
+                    selectingSrc = !selectingSrc;
+                }
+            }
+        }
+        else
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.ReadValue<Vector2>().x, mousePosition.ReadValue<Vector2>().y, .0f));
+            if (Physics.Raycast(ray, out hit, 50f))
+            {
+                if (hit.transform != null)
+                {
+                    selectedNode = int.Parse(hit.transform.name);
+                }
+                else
+                {
+                    selectedNode = -1;
+                }
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -113,13 +177,27 @@ public class DijsktraRiver : MonoBehaviour
         {
             Gizmos.DrawSphere(mg.GetVerticePosition(int.Parse(finalPath[i].name)), .1f);
         }
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(mg.GetVerticePosition(int.Parse(src.name)), .1f); //displaying the first node of the path
+
+        //Drawing the hovered node
+        Gizmos.color = Color.black;
+        if (selectedNode != -1) Gizmos.DrawSphere(mg.GetVerticePosition(selectedNode), .1f);
+        /*if (selectedNode != -1)
+        {
+        // Colors the selected node (without resetting)
+            mg.colors[selectedNode] = Color.white;
+            mg.UpdateMesh();
+        }*/
     }
 
     private void OnGUI()
     {
+        // Writing each path's weight
         foreach (Path p in g.paths)
         {
-            Handles.Label((mg.GetVerticePosition(int.Parse(p.from.name)) + mg.GetVerticePosition(int.Parse(p.to.name))) / 2f, p.weight + "");
+            //Handles.Label((mg.GetVerticePosition(int.Parse(p.from.name)) + mg.GetVerticePosition(int.Parse(p.to.name))) / 2f, p.weight + "");
         }
     }
 
