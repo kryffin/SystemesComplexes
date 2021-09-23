@@ -59,7 +59,6 @@ public class MeshGenerator : MonoBehaviour
                 nodeColliders[i].name = i + "";
                 vertices[i] = new Vector3(x, y, z);
 
-
                 i++;
             }
         }

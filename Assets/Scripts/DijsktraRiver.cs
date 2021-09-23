@@ -25,6 +25,8 @@ public class DijsktraRiver : MonoBehaviour
     public InputAction rightClick;
     public InputAction mousePosition;
 
+    private LineRenderer lr;
+
     private void OnEnable()
     {
         leftClick.Enable();
@@ -94,10 +96,26 @@ public class DijsktraRiver : MonoBehaviour
     {
         d.Run(g, src);
         finalPath = d.TraceBack(dest);
+
+        TracePath();
+    }
+
+    private void TracePath()
+    {
+        List<Vector3> nodes = new List<Vector3>();
+        foreach (Node n in finalPath)
+        {
+            nodes.Add(mg.GetVerticePosition(int.Parse(n.name)) + Vector3.up * 0.1f);
+        }
+
+        lr.positionCount = nodes.Count;
+        lr.SetPositions(nodes.ToArray());
     }
 
     void Start()
     {
+        lr = GetComponent<LineRenderer>();
+
         mg = GetComponent<MeshGenerator>();
         mg.Init(width-1, height-1, magnitude);
 
@@ -113,6 +131,7 @@ public class DijsktraRiver : MonoBehaviour
         dest = new Node(Random.Range(0, width) + "");
 
         finalPath = d.TraceBack(dest);
+        TracePath();
     }
 
     private void Update()
@@ -177,7 +196,7 @@ public class DijsktraRiver : MonoBehaviour
         // Drawing the shortest path
         for (int i = 0; i < finalPath.Count - 1; i++)
         {
-            Debug.DrawLine(mg.GetVerticePosition(int.Parse(finalPath[i].name)), mg.GetVerticePosition(int.Parse(finalPath[i+1].name)), Color.red);
+            //Debug.DrawLine(mg.GetVerticePosition(int.Parse(finalPath[i].name)), mg.GetVerticePosition(int.Parse(finalPath[i+1].name)), Color.red);
         }
     }
 
