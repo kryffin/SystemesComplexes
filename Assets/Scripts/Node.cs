@@ -1,10 +1,10 @@
 public class Node
 {
-    public string name;
+    public int value; //acts as its name
 
     public override string ToString()
     {
-        return name;
+        return value + "";
     }
 
     public override bool Equals(object obj) => this.Equals(obj as Node);
@@ -17,7 +17,7 @@ public class Node
 
         if (this.GetType() != n.GetType()) return false;
 
-        return name == n.name;
+        return value == n.value;
     }
     public static bool operator ==(Node obj1, Node obj2)
     {
@@ -42,11 +42,11 @@ public class Node
         return !(obj1 == obj2);
     }
 
-    public override int GetHashCode() => name.GetHashCode();
+    public override int GetHashCode() => value.GetHashCode();
 
-    public Node(string name)
+    public Node(int value)
     {
-        this.name = name;
+        this.value = value;
     }
 
 }

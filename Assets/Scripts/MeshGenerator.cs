@@ -1,36 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
 public class MeshGenerator : MonoBehaviour
 {
 
-    Mesh mesh;
-
-    GameObject[] nodeColliders;
-    Vector3[] vertices;
-    int[] triangles;
+    // Mesh
+    private Mesh mesh;
+    private Vector3[] vertices;
+    private int[] triangles;
     public Color[] colors;
 
+    // Mesh size
     private int xSize;
     private int zSize;
 
-    public Gradient gradient;
+    public Gradient gradient; //elevation gradient
 
-    public GameObject nodeCollider;
+    public GameObject nodeObject; //node prefab
+    private GameObject[] nodeObjects; //nodes
 
+    // Materials
     public Material pathMaterial;
     public Material defaultMaterial;
     public Material selectedMaterial;
     public Material sourceMaterial;
     public Material destinationMaterial;
 
+    // Returns a vertice's position
     public Vector3 GetVerticePosition(int index)
     {
         return vertices[index];
     }
 
+    // Initializes the mesh
     public void Init(int width, int height, float magnitude)
     {
         xSize = width;
@@ -43,25 +48,31 @@ public class MeshGenerator : MonoBehaviour
         UpdateMesh();
     }
 
+    // Creates the random mesh's shape
     void CreateShape(float magnitude)
     {
-        nodeColliders = new GameObject[(xSize + 1) * (zSize + 1)];
+        nodeObjects = new GameObject[(xSize + 1) * (zSize + 1)];
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
 
-        float variation = Random.Range(.1f, .3f);
+        // Positions
+
+        float variation = Random.Range(.1f, .3f); //variation for the Perlin noise
+        float offset = -0.06f; //offsetting the node's elevation to avoid sticking out to much
 
         for (int i = 0, z = 0; z <= zSize; z++)
         {
             for (int x = 0; x <= xSize; x++)
             {
-                float y = Mathf.PerlinNoise(x * variation, z * variation) * magnitude;
-                nodeColliders[i] = Instantiate(nodeCollider, new Vector3(x, y, z), Quaternion.identity, this.transform);
-                nodeColliders[i].name = i + "";
+                float y = Mathf.PerlinNoise(x * variation, z * variation) * magnitude; //returns the y position of each node
+                nodeObjects[i] = Instantiate(nodeObject, new Vector3(x, y + offset, z), Quaternion.identity, this.transform); //creating the nodes
+                nodeObjects[i].name = i + "";
                 vertices[i] = new Vector3(x, y, z);
 
                 i++;
             }
         }
+
+        // Triangles
 
         triangles = new int[xSize * zSize * 6];
 
@@ -85,6 +96,8 @@ public class MeshGenerator : MonoBehaviour
             vert++;
         }
 
+        // Colors
+
         colors = new Color[vertices.Length];
 
         for (int i = 0, z = 0; z <= zSize; z++)
@@ -92,30 +105,33 @@ public class MeshGenerator : MonoBehaviour
             for (int x = 0; x <= xSize; x++)
             {
                 float height = Mathf.InverseLerp(0f, magnitude, vertices[i].y);
-                colors[i] = gradient.Evaluate(height);
+                colors[i] = gradient.Evaluate(height); //evaluates the elevation of the node, giving its color
                 i++;
             }
         }
 
     }
 
+    // Changes the path's nodes' material
     public void DrawPath(List<Node> path)
     {
-        for (int i = 0; i < nodeColliders.Length; i++)
+        for (int i = 0; i < nodeObjects.Length; i++)
         {
-            if (path.Contains(new Node(i + ""))) nodeColliders[i].GetComponent<MeshRenderer>().material = pathMaterial;
-            else nodeColliders[i].GetComponent<MeshRenderer>().material = defaultMaterial;
+            if (path.Contains(new Node(i))) nodeObjects[i].GetComponent<MeshRenderer>().material = pathMaterial;
+            else nodeObjects[i].GetComponent<MeshRenderer>().material = defaultMaterial;
         }
 
-        nodeColliders[int.Parse(path[0].name + "")].GetComponent<MeshRenderer>().material = destinationMaterial;
-        nodeColliders[int.Parse(path[path.Count-1].name + "")].GetComponent<MeshRenderer>().material = sourceMaterial;
+        nodeObjects[path[0].value].GetComponent<MeshRenderer>().material = destinationMaterial; //ending node
+        nodeObjects[path[path.Count-1].value].GetComponent<MeshRenderer>().material = sourceMaterial; //starting node
     }
 
+    // Changes the hovered node's material
     public void HoverNode(int n)
     {
-        nodeColliders[n].GetComponent<MeshRenderer>().material = selectedMaterial;
+        nodeObjects[n].GetComponent<MeshRenderer>().material = selectedMaterial;
     }
 
+    // Updates the whole mesh
     public void UpdateMesh()
     {
         mesh.Clear();
@@ -126,5 +142,24 @@ public class MeshGenerator : MonoBehaviour
 
         mesh.RecalculateNormals();
     }
+
+    // Updates the mesh's colors
+    public void UpdateColors()
+    {
+        mesh.colors = colors;
+    }
+
+    /*
+    private void OnDrawGizmos()
+    {
+        if (nodeColliders == null) return;
+
+        //Printing nodes' name on screen
+        foreach (GameObject go in nodeColliders)
+        {
+            Handles.Label(go.transform.position, go.name);
+        }
+    }
+    */
 
 }

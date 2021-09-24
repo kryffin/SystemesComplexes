@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class Dijkstra
@@ -6,15 +7,14 @@ public class Dijkstra
 
     private Graph g;
 
-    public float[] distances;
-    public Node[] previous;
-    private HashSet<Node> Q;
+    public float[] distances; //distances towards each node (index) from the starting node
+    public Node[] previous; //previous node to the index relative to the shortest path found
 
+    // Initializes the algorithm
     private void Init(int source)
     {
         distances = new float[g.nodes.Count];
         previous = new Node[g.nodes.Count];
-        Q = new HashSet<Node>();
 
         int i = 0;
         foreach (Node n in g.nodes)
@@ -27,73 +27,95 @@ public class Dijkstra
         distances[source] = 0f;
     }
 
+    // returns the minimum distance node based on a graph's subset Q
     private Node MinDistance(HashSet<Node> Q)
     {
         float min = float.MaxValue;
         Node node = null;
 
-        int i = 0;
         foreach (Node n in Q)
         {
-            if (distances[i] < min)
+            if (distances[n.value] < min)
             {
-                min = distances[i];
+                min = distances[n.value];
                 node = n;
             }
-
-            i++;
         }
 
         return node;
     }
 
-    private void UpdateDistances(int s1, int s2)
+    // Updates distances between two nodes
+    private void UpdateDistances(Node s1, Node s2)
     {
-        float weight = g.getWeight(s1, s2);
+        float weight = g.getWeight(s1.value, s2.value);
 
-        if (distances[s2] > distances[s1] + weight)
+        if (distances[s2.value] > distances[s1.value] + weight)
         {
-            distances[s2] = distances[s1] + weight;
-            previous[s2] = g.getNode(s1);
+            distances[s2.value] = distances[s1.value] + weight;
+            previous[s2.value] = g.getNode(s1.value);
         }
     }
 
-    private void DisplayResults()
+    // Displays the algorithm results
+    private void DisplayResults(Node source)
     {
-        Debug.Log("Les distances sont :");
+        StringBuilder sb = new StringBuilder();
+        sb.Append("------------Dijkstra-------------\n");
+        sb.Append("Source : " + source.value + "\n");
+        sb.Append("Les distances sont :\n");
         int i = 0;
         foreach (float f in distances)
         {
-            Debug.Log("d[" + (i++) + "] = " + f);
+            sb.Append("\td[" + (i++) + "] = " + f + "\n");
         }
 
-        Debug.Log("Les précédents sont :");
+        sb.Append("Les précédents sont :\n");
         i = 0;
         foreach (Node n in previous)
         {
-            Debug.Log("prev[" + (i++) + "] = " + n);
+            sb.Append("\tprev[" + (i++) + "] = " + n + "\n");
         }
-        Debug.Log("Fin");
+        sb.Append("---------------------------------");
+
+        Debug.Log(sb.ToString());
+    }
+    
+    // Displays the Dijkstra results only if the previous array is glitched (used to debug only)
+    private void DisplayResultsIfOneEmpty(Node source)
+    {
+        bool display = false;
+        foreach (Node p in previous)
+        {
+            if (p == null && p != source) display = true;
+        }
+
+        if (!display) return;
+
+        DisplayResults(source);
     }
 
-    public List<Node> TraceBack (Node n)
+    // Returns a list of node which is the shortest path towards a given ending node
+    public List<Node> TraceBack (Node end)
     {
         List<Node> nodes = new List<Node>();
-        nodes.Add(n);
-        Node cur = n;
-        while (previous[int.Parse(cur.name)] != null)
+        nodes.Add(end);
+        Node cur = end;
+        while (previous[cur.value] != null)
         {
-            cur = previous[int.Parse(cur.name)];
+            cur = previous[cur.value];
             nodes.Add(cur);
         }
 
         return nodes;
     }
 
+    // Runs the Dijkstra algorithm on given graph from given starting node
     public void Run(Graph g, Node source)
     {
         this.g = g;
-        Init(int.Parse(source.name));
+        Init(source.value);
+        HashSet<Node> Q = new HashSet<Node>();
 
         foreach (Node n in g.nodes) Q.Add(n);
 
@@ -105,12 +127,12 @@ public class Dijkstra
 
             foreach (Path p in g.paths)
             {
-                if (p.from == s1) UpdateDistances(g.getIndex(s1), g.getIndex(p.to));
-                else if (p.to == s1) UpdateDistances(g.getIndex(p.from), g.getIndex(s1));
+                if (p.from == s1) UpdateDistances(s1, p.to);
             }
         }
 
-        //DisplayResults();
+        //DisplayResults(source);
+        //DisplayResultsIfOneEmpty(source);
     }
 
 }
