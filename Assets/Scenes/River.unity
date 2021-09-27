@@ -605,6 +605,7 @@ MonoBehaviour:
   width: 26
   height: 15
   magnitude: 6
+  waterLevel: 1.6
   leftClick:
     m_Name: Left Click
     m_Type: 0

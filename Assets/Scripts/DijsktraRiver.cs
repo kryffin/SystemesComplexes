@@ -9,6 +9,8 @@ public class DijsktraRiver : MonoBehaviour
 
     public float magnitude; //magnitude for the mesh generation
 
+    public float waterLevel;
+
     // Controls
     public InputAction leftClick;
     public InputAction rightClick;
@@ -48,38 +50,48 @@ public class DijsktraRiver : MonoBehaviour
         {
             for (int w = 0; w < width; w++)
             {
+                if (mg.GetVerticePosition(width * h + w).y <= waterLevel) continue;
+
                 // Direct neighbors
                 //south
-                if (h != 0) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + w],
+                if (h != 0 && mg.GetVerticePosition(width * (h - 1) + w).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + w],
                     Weight(mg.GetVerticePosition(width * (h - 1) + w).y)));
 
                 //east
-                if (w != 0) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * h + (w - 1)],
+                if (w != 0 && mg.GetVerticePosition(width * h + (w - 1)).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * h + (w - 1)],
                     Weight(mg.GetVerticePosition(width * h + (w - 1)).y)));
 
                 //north
-                if (h != height - 1) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + w],
+                if (h != height - 1 && mg.GetVerticePosition(width * (h + 1) + w).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + w],
                     Weight(mg.GetVerticePosition(width * (h + 1) + w).y)));
 
                 //west
-                if (w != width - 1) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * h + (w + 1)],
+                if (w != width - 1 && mg.GetVerticePosition(width * h + (w + 1)).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * h + (w + 1)],
                     Weight(mg.GetVerticePosition(width * h + (w + 1)).y)));
 
                 // Diagonal neighbors
                 //south east
-                if (h != 0 && w != width - 1) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + (w + 1)],
+                if (h != 0 && w != width - 1 && mg.GetVerticePosition(width * (h - 1) + (w + 1)).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + (w + 1)],
                     Weight(mg.GetVerticePosition(width * (h - 1) + (w + 1)).y)));
 
                 //north west
-                if (w != 0 && h != height - 1) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + (w - 1)],
+                if (w != 0 && h != height - 1 && mg.GetVerticePosition(width * (h + 1) + (w - 1)).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + (w - 1)],
                     Weight(mg.GetVerticePosition(width * (h + 1) + (w - 1)).y)));
 
                 //north east
-                if (h != height - 1 && w != width - 1) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + (w + 1)],
+                if (h != height - 1 && w != width - 1 && mg.GetVerticePosition(width * (h + 1) + (w + 1)).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + (w + 1)],
                     Weight(mg.GetVerticePosition(width * (h + 1) + (w + 1)).y)));
 
                 //south west
-                if (w != 0 && h != 0) g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + (w - 1)],
+                if (w != 0 && h != 0 && mg.GetVerticePosition(width * (h - 1) + (w - 1)).y > waterLevel)
+                    g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + (w - 1)],
                     Weight(mg.GetVerticePosition(width * (h - 1) + (w - 1)).y)));
 
             }
@@ -120,7 +132,7 @@ public class DijsktraRiver : MonoBehaviour
         lr = GetComponent<LineRenderer>();
 
         mg = GetComponent<MeshGenerator>();
-        mg.Init(width-1, height-1, magnitude);
+        mg.Init(width-1, height-1, magnitude, waterLevel);
 
         //initialization of the graph
         g = new Graph();
@@ -215,21 +227,21 @@ public class DijsktraRiver : MonoBehaviour
         mousePosition.Disable();
     }
 
-    /*
+    
     private void FixedUpdate()
     {
         // Drawing each path
         foreach (Path p in g.paths)
         {
-            Debug.DrawLine(mg.GetVerticePosition(int.Parse(p.from.name)), mg.GetVerticePosition(int.Parse(p.to.name)));
+            Debug.DrawLine(mg.GetVerticePosition(p.from.value), mg.GetVerticePosition(p.to.value));
         }
 
         // Drawing the shortest path
         for (int i = 0; i < finalPath.Count - 1; i++)
         {
-            Debug.DrawLine(mg.GetVerticePosition(int.Parse(finalPath[i].name)), mg.GetVerticePosition(int.Parse(finalPath[i+1].name)), Color.red);
+            Debug.DrawLine(mg.GetVerticePosition(finalPath[i].value), mg.GetVerticePosition(finalPath[i+1].value), Color.red);
         }
     }
-    */
+    
 
 }

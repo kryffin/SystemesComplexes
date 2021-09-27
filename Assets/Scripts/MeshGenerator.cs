@@ -17,6 +17,8 @@ public class MeshGenerator : MonoBehaviour
     private int xSize;
     private int zSize;
 
+    private float waterLevel;
+
     public Gradient gradient; //elevation gradient
 
     public GameObject nodeObject; //node prefab
@@ -36,8 +38,10 @@ public class MeshGenerator : MonoBehaviour
     }
 
     // Initializes the mesh
-    public void Init(int width, int height, float magnitude)
+    public void Init(int width, int height, float magnitude, float waterLevel)
     {
+        this.waterLevel = waterLevel;
+
         xSize = width;
         zSize = height;
 
@@ -64,8 +68,16 @@ public class MeshGenerator : MonoBehaviour
             for (int x = 0; x <= xSize; x++)
             {
                 float y = Mathf.PerlinNoise(x * variation, z * variation) * magnitude; //returns the y position of each node
+
                 nodeObjects[i] = Instantiate(nodeObject, new Vector3(x, y + offset, z), Quaternion.identity, this.transform); //creating the nodes
                 nodeObjects[i].name = i + "";
+
+                if (y <= waterLevel)
+                {
+                    nodeObjects[i].GetComponent<MeshRenderer>().enabled = false;
+                    nodeObjects[i].GetComponent<SphereCollider>().enabled = false;
+                }
+
                 vertices[i] = new Vector3(x, y, z);
 
                 i++;
@@ -117,6 +129,8 @@ public class MeshGenerator : MonoBehaviour
     {
         for (int i = 0; i < nodeObjects.Length; i++)
         {
+            if (GetVerticePosition(i).y <= waterLevel) continue;
+
             if (path.Contains(new Node(i))) nodeObjects[i].GetComponent<MeshRenderer>().material = pathMaterial;
             else nodeObjects[i].GetComponent<MeshRenderer>().material = defaultMaterial;
         }
