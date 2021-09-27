@@ -19,6 +19,7 @@ public class DijsktraRiver : MonoBehaviour
     private LineRenderer lr;
 
     private Dijkstra d; //Dijkstra algorithm
+    private AStar a; //A* algorithm
     private Graph g; //generated graph
 
     private List<Node> finalPath; //shortest path
@@ -88,8 +89,13 @@ public class DijsktraRiver : MonoBehaviour
     // Updates the shortest path
     private void UpdatePaths()
     {
-        d.Run(g, start);
-        finalPath = d.TraceBack(end);
+        // Dijkstra
+        //d.Run(g, start);
+        //finalPath = d.TraceBack(end);
+
+        // A*
+        a.Run(g, start, end, mg);
+        finalPath = a.TraceBack(end);
 
         TracePath();
     }
@@ -121,13 +127,21 @@ public class DijsktraRiver : MonoBehaviour
         InitNodes();
         InitPaths();
 
-        d = new Dijkstra();
         start = new Node(Random.Range(0, Mathf.FloorToInt((width * height) / 2f))); //random source node
-        d.Run(g, start);
-
         end = new Node(Random.Range(Mathf.FloorToInt((width * height) / 2f), width * height)); //random end node
 
-        finalPath = d.TraceBack(end);
+        // Dijkstra
+        //d = new Dijkstra();
+        //d.Run(g, start);
+
+        // A*
+        a = new AStar();
+        a.Run(g, start, end, mg);
+
+        // Shortest path
+        //finalPath = d.TraceBack(end); //Dijkstra shortest path
+        finalPath = a.TraceBack(end); //A* shortest path
+
         TracePath();
     }
 

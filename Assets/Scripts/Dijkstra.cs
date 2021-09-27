@@ -48,12 +48,12 @@ public class Dijkstra
     // Updates distances between two nodes
     private void UpdateDistances(Node s1, Node s2)
     {
-        float weight = g.getWeight(s1.value, s2.value);
+        float weight = g.GetWeight(s1.value, s2.value);
 
         if (distances[s2.value] > distances[s1.value] + weight)
         {
             distances[s2.value] = distances[s1.value] + weight;
-            previous[s2.value] = g.getNode(s1.value);
+            previous[s2.value] = g.GetNode(s1.value);
         }
     }
 
