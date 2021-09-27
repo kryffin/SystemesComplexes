@@ -58,7 +58,7 @@ public class MeshGenerator : MonoBehaviour
         nodeObjects = new GameObject[(xSize + 1) * (zSize + 1)];
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
 
-        // Positions
+        // VERTEX & NODE POSITIONS
 
         float variation = Random.Range(.1f, .3f); //variation for the Perlin noise
         float offset = -0.06f; //offsetting the node's elevation to avoid sticking out to much
@@ -84,7 +84,7 @@ public class MeshGenerator : MonoBehaviour
             }
         }
 
-        // Triangles
+        // TRIANGLES
 
         triangles = new int[xSize * zSize * 6];
 
@@ -108,7 +108,7 @@ public class MeshGenerator : MonoBehaviour
             vert++;
         }
 
-        // Colors
+        // COLORS
 
         colors = new Color[vertices.Length];
 

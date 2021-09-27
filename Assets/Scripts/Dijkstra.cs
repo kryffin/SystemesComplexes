@@ -117,7 +117,9 @@ public class Dijkstra
         Init(source.value);
         HashSet<Node> Q = new HashSet<Node>();
 
-        foreach (Node n in g.nodes) Q.Add(n);
+        foreach (Node n in g.nodes)
+            if (g.GetNeighborOf(n).Count != 0) //to avoid underwater nodes
+                Q.Add(n);
 
         Node s1;
         while (Q.Count != 0)

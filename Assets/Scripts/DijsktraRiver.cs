@@ -11,6 +11,12 @@ public class DijsktraRiver : MonoBehaviour
 
     public float waterLevel;
 
+    public enum Algorithm
+    {
+        DIJKSTRA, ASTAR
+    };
+    public Algorithm algorithm = Algorithm.DIJKSTRA;
+
     // Controls
     public InputAction leftClick;
     public InputAction rightClick;
@@ -98,16 +104,36 @@ public class DijsktraRiver : MonoBehaviour
         }
     }
 
+    // Randomizes the first path and makes sure to use existant nodes
+    private void InitFirstPath()
+    {
+        start = new Node(Random.Range(0, Mathf.FloorToInt((width * height) / 2f))); //random source node
+        while (!g.nodes.Contains(start))
+        {
+            start = new Node(start.value+1);
+        }
+
+        end = new Node(Random.Range(Mathf.FloorToInt((width * height) / 2f), width * height)); //random end node
+        while (!g.nodes.Contains(end))
+        {
+            end = new Node(end.value - 1);
+        }
+    }
+
     // Updates the shortest path
     private void UpdatePaths()
     {
-        // Dijkstra
-        //d.Run(g, start);
-        //finalPath = d.TraceBack(end);
-
-        // A*
-        a.Run(g, start, end, mg);
-        finalPath = a.TraceBack(end);
+        if (algorithm.Equals(Algorithm.DIJKSTRA))
+        {
+            // Dijkstra
+            d.Run(g, start);
+            finalPath = d.TraceBack(end);
+        } else if (algorithm.Equals(Algorithm.ASTAR))
+        {
+            // A*
+            a.Run(g, start, end, mg);
+            finalPath = a.TraceBack(end);
+        }
 
         TracePath();
     }
@@ -139,20 +165,23 @@ public class DijsktraRiver : MonoBehaviour
         InitNodes();
         InitPaths();
 
-        start = new Node(Random.Range(0, Mathf.FloorToInt((width * height) / 2f))); //random source node
-        end = new Node(Random.Range(Mathf.FloorToInt((width * height) / 2f), width * height)); //random end node
+        InitFirstPath();
 
-        // Dijkstra
-        //d = new Dijkstra();
-        //d.Run(g, start);
-
-        // A*
+        d = new Dijkstra();
         a = new AStar();
-        a.Run(g, start, end, mg);
 
-        // Shortest path
-        //finalPath = d.TraceBack(end); //Dijkstra shortest path
-        finalPath = a.TraceBack(end); //A* shortest path
+        if (algorithm.Equals(Algorithm.DIJKSTRA))
+        {
+            // Dijkstra
+            d.Run(g, start);
+            finalPath = d.TraceBack(end);
+        }
+        else if (algorithm.Equals(Algorithm.ASTAR))
+        {
+            // A*
+            a.Run(g, start, end, mg);
+            finalPath = a.TraceBack(end);
+        }
 
         TracePath();
     }
