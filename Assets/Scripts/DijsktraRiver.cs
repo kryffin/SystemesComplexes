@@ -21,6 +21,7 @@ public class DijsktraRiver : MonoBehaviour
     public InputAction leftClick;
     public InputAction rightClick;
     public InputAction mousePosition;
+    public InputAction middleClick;
 
     // Components
     private MeshGenerator mg;
@@ -201,7 +202,7 @@ public class DijsktraRiver : MonoBehaviour
                     start = new Node(int.Parse(hit.transform.name));
 
                     UpdatePaths();
-                    mg.DrawPath(finalPath);
+                    mg.DrawPath(finalPath, g);
                 }
             }
         }
@@ -217,7 +218,26 @@ public class DijsktraRiver : MonoBehaviour
                     end = new Node(int.Parse(hit.transform.name));
 
                     UpdatePaths();
-                    mg.DrawPath(finalPath);
+                    mg.DrawPath(finalPath, g);
+                }
+            }
+        }
+        else if (middleClick.triggered)
+        {
+            // Middle click is used to determine an obstacle
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.ReadValue<Vector2>().x, mousePosition.ReadValue<Vector2>().y, .0f));
+            if (Physics.Raycast(ray, out hit, 100f))
+            {
+                if (hit.transform != null)
+                {
+                    //sets the node as obstacle int.Parse(hit.transform.name)
+                    g.SetObstacle(new Node(int.Parse(hit.transform.name)));
+                    mg.colors[int.Parse(hit.transform.name)] = Color.black;
+                    mg.UpdateColors();
+
+                    UpdatePaths();
+                    mg.DrawPath(finalPath, g);
                 }
             }
         }
@@ -235,7 +255,7 @@ public class DijsktraRiver : MonoBehaviour
             }
             else // Nothing hovered, redrawing the whole nodes
             {
-                mg.DrawPath(finalPath);
+                mg.DrawPath(finalPath, g);
             }
         }
     }
@@ -246,6 +266,7 @@ public class DijsktraRiver : MonoBehaviour
         leftClick.Enable();
         rightClick.Enable();
         mousePosition.Enable();
+        middleClick.Enable();
     }
 
     // Disables the controls
@@ -254,6 +275,7 @@ public class DijsktraRiver : MonoBehaviour
         leftClick.Disable();
         rightClick.Disable();
         mousePosition.Disable();
+        middleClick.Disable();
     }
 
     

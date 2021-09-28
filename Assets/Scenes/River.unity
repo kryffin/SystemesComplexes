@@ -527,6 +527,7 @@ MonoBehaviour:
   selectedMaterial: {fileID: 2100000, guid: 8c6e50bed9196774493695f3462de1d3, type: 2}
   sourceMaterial: {fileID: 2100000, guid: dac86dc60643c944097b4f0d91369b26, type: 2}
   destinationMaterial: {fileID: 2100000, guid: 7b252569705bffa4f98e86542096f4fb, type: 2}
+  obstacleMaterial: {fileID: 2100000, guid: e8d6e5ea78f66a54e82cb66989129b84, type: 2}
 --- !u!33 &1365638732
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -606,7 +607,7 @@ MonoBehaviour:
   height: 15
   magnitude: 6
   waterLevel: 1.6
-  algorithm: 0
+  algorithm: 1
   leftClick:
     m_Name: Left Click
     m_Type: 0
@@ -654,6 +655,22 @@ MonoBehaviour:
       m_Processors: 
       m_Groups: 
       m_Action: Mouse Position
+      m_Flags: 0
+  middleClick:
+    m_Name: Middle Click
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: edfc172d-3b5e-4be6-9c7b-2eae2037c0d3
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 7d094a68-52d7-42f1-b3af-f2932fd1f8e1
+      m_Path: <Mouse>/middleButton
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Middle Click
       m_Flags: 0
 --- !u!120 &1365638736
 LineRenderer:

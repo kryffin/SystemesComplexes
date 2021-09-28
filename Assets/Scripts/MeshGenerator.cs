@@ -30,6 +30,7 @@ public class MeshGenerator : MonoBehaviour
     public Material selectedMaterial;
     public Material sourceMaterial;
     public Material destinationMaterial;
+    public Material obstacleMaterial;
 
     // Returns a vertice's position
     public Vector3 GetVerticePosition(int index)
@@ -125,13 +126,14 @@ public class MeshGenerator : MonoBehaviour
     }
 
     // Changes the path's nodes' material
-    public void DrawPath(List<Node> path)
+    public void DrawPath(List<Node> path, Graph g)
     {
         for (int i = 0; i < nodeObjects.Length; i++)
         {
             if (GetVerticePosition(i).y <= waterLevel) continue;
 
             if (path.Contains(new Node(i))) nodeObjects[i].GetComponent<MeshRenderer>().material = pathMaterial;
+            else if (g.nodes[i].obstacle) nodeObjects[i].GetComponent<MeshRenderer>().material = obstacleMaterial;
             else nodeObjects[i].GetComponent<MeshRenderer>().material = defaultMaterial;
         }
 

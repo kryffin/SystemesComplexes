@@ -1,6 +1,7 @@
 public class Node
 {
     public int value; //acts as its name
+    public bool obstacle = false;
 
     public override string ToString()
     {

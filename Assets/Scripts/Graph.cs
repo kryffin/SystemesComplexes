@@ -71,6 +71,11 @@ public class Graph
         }
     }
 
+    public void SetObstacle(Node n)
+    {
+        nodes[n.value].obstacle = !nodes[n.value].obstacle;
+    }
+
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();

@@ -87,6 +87,8 @@ public class AStar
 
             foreach (Node Y in g.GetNeighborOf(X))
             {
+                if (Y.obstacle) continue;
+
                 if (!openList.Contains(Y) && !closedList.Contains(Y))
                 {
                     openList.Add(Y);
