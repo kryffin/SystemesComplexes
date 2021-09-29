@@ -11,6 +11,8 @@ public class AStar
     public float[] distances;
     public Node[] previous;
 
+    public float magnitude;
+
     public void Init(Graph g, MeshGenerator mg)
     {
         this.mg = mg;
@@ -59,10 +61,15 @@ public class AStar
         return dist;
     }
 
-    // A MODIFIER OSKUR CHNAGE MOI CA
     private float DistanceToDestination(Node Y, Node dest)
     {
-        return Mathf.Max(Mathf.Abs(mg.GetVerticePosition(dest.value).x - mg.GetVerticePosition(Y.value).x), Mathf.Abs(mg.GetVerticePosition(dest.value).z - mg.GetVerticePosition(Y.value).z));
+        // gestion 2d du machin
+        /*return Mathf.Max(Mathf.Abs(mg.GetVerticePosition(dest.value).x - mg.GetVerticePosition(Y.value).x),
+                         Mathf.Abs(mg.GetVerticePosition(dest.value).z - mg.GetVerticePosition(Y.value).z));*/
+
+        // Seems to be working ??? although 10f might be a bit too much (scared of heights)
+        // nope
+        return Mathf.Abs(mg.GetVerticePosition(Y.value).y - mg.GetVerticePosition(dest.value).y) * 1.5f;
     }
 
     private float Weight(Node Y, Node dest)

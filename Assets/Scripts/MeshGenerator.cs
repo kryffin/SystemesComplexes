@@ -130,7 +130,7 @@ public class MeshGenerator : MonoBehaviour
     {
         for (int i = 0; i < nodeObjects.Length; i++)
         {
-            if (GetVerticePosition(i).y <= waterLevel) continue;
+            if (GetVerticePosition(i).y <= waterLevel && !g.nodes[i].obstacle) continue;
 
             if (path.Contains(new Node(i))) nodeObjects[i].GetComponent<MeshRenderer>().material = pathMaterial;
             else if (g.nodes[i].obstacle) nodeObjects[i].GetComponent<MeshRenderer>().material = obstacleMaterial;

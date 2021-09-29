@@ -170,6 +170,7 @@ public class DijsktraRiver : MonoBehaviour
 
         d = new Dijkstra();
         a = new AStar();
+        a.magnitude = magnitude;
 
         if (algorithm.Equals(Algorithm.DIJKSTRA))
         {
