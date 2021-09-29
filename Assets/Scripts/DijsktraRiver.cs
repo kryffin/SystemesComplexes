@@ -233,8 +233,6 @@ public class DijsktraRiver : MonoBehaviour
                 {
                     //sets the node as obstacle int.Parse(hit.transform.name)
                     g.SetObstacle(new Node(int.Parse(hit.transform.name)));
-                    mg.colors[int.Parse(hit.transform.name)] = Color.black;
-                    mg.UpdateColors();
 
                     UpdatePaths();
                     mg.DrawPath(finalPath, g);

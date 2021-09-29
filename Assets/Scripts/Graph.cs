@@ -33,7 +33,7 @@ public class Graph
 
         foreach (Path p in paths)
         {
-            if (p.from == n) neighbors.Add(p.to);
+            if (p.from == n && !p.to.obstacle) neighbors.Add(p.to);
         }
 
         return neighbors;
