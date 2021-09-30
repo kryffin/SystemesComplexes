@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DijsktraRiver : MonoBehaviour
+public class PathFinder : MonoBehaviour
 {
 
     public int width, height; //graph size
