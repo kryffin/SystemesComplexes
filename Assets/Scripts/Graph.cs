@@ -94,8 +94,8 @@ public class Graph
         paths = new List<Path>();
     }
 
-    // Constructs a graph based on a .txt file
-    public Graph(string filename)
+    // Constructs a graph based on a .txt file UNUSED
+    /*public Graph(string filename)
     {
         nodes = new List<Node>();
         paths = new List<Path>();
@@ -110,6 +110,6 @@ public class Graph
             if (!nodes.Contains(dest)) nodes.Add(dest);
             paths.Add(new Path(src, dest, float.Parse(path[2])));
         }
-    }
+    }*/
 
 }

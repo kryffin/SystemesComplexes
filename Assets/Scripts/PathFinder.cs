@@ -26,6 +26,10 @@ public class PathFinder : MonoBehaviour
     // Components
     private MeshGenerator mg;
     private LineRenderer lr;
+    private LineRenderer lrObstacles;
+
+    public Transform trashPoint;
+    public float yOffset;
 
     private Dijkstra d; //Dijkstra algorithm
     private AStar a; //A* algorithm
@@ -63,43 +67,43 @@ public class PathFinder : MonoBehaviour
                 //south
                 if (h != 0 && mg.GetVerticePosition(width * (h - 1) + w).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + w],
-                    Weight(mg.GetVerticePosition(width * (h - 1) + w).y)));
+                    Weight(mg.GetVerticePosition(width * (h - 1) + w).y), true));
 
                 //east
                 if (w != 0 && mg.GetVerticePosition(width * h + (w - 1)).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * h + (w - 1)],
-                    Weight(mg.GetVerticePosition(width * h + (w - 1)).y)));
+                    Weight(mg.GetVerticePosition(width * h + (w - 1)).y), true));
 
                 //north
                 if (h != height - 1 && mg.GetVerticePosition(width * (h + 1) + w).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + w],
-                    Weight(mg.GetVerticePosition(width * (h + 1) + w).y)));
+                    Weight(mg.GetVerticePosition(width * (h + 1) + w).y), true));
 
                 //west
                 if (w != width - 1 && mg.GetVerticePosition(width * h + (w + 1)).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * h + (w + 1)],
-                    Weight(mg.GetVerticePosition(width * h + (w + 1)).y)));
+                    Weight(mg.GetVerticePosition(width * h + (w + 1)).y), true));
 
                 // Diagonal neighbors
                 //south east
                 if (h != 0 && w != width - 1 && mg.GetVerticePosition(width * (h - 1) + (w + 1)).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + (w + 1)],
-                    Weight(mg.GetVerticePosition(width * (h - 1) + (w + 1)).y)));
+                    Weight(mg.GetVerticePosition(width * (h - 1) + (w + 1)).y), false));
 
                 //north west
                 if (w != 0 && h != height - 1 && mg.GetVerticePosition(width * (h + 1) + (w - 1)).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + (w - 1)],
-                    Weight(mg.GetVerticePosition(width * (h + 1) + (w - 1)).y)));
+                    Weight(mg.GetVerticePosition(width * (h + 1) + (w - 1)).y), false));
 
                 //north east
                 if (h != height - 1 && w != width - 1 && mg.GetVerticePosition(width * (h + 1) + (w + 1)).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h + 1) + (w + 1)],
-                    Weight(mg.GetVerticePosition(width * (h + 1) + (w + 1)).y)));
+                    Weight(mg.GetVerticePosition(width * (h + 1) + (w + 1)).y), false));
 
                 //south west
                 if (w != 0 && h != 0 && mg.GetVerticePosition(width * (h - 1) + (w - 1)).y > waterLevel)
                     g.paths.Add(new Path(g.nodes[width * h + w], g.nodes[width * (h - 1) + (w - 1)],
-                    Weight(mg.GetVerticePosition(width * (h - 1) + (w - 1)).y)));
+                    Weight(mg.GetVerticePosition(width * (h - 1) + (w - 1)).y), false));
 
             }
         }
@@ -147,16 +151,35 @@ public class PathFinder : MonoBehaviour
         for (int i = 0; i < finalPath.Count; i++)
         {
             if (i == 0 || i == finalPath.Count - 1) nodes.Add(mg.GetVerticePosition(finalPath[i].value));
-            else nodes.Add(mg.GetVerticePosition(finalPath[i].value) + Vector3.up * 0.08f);
+            else nodes.Add(mg.GetVerticePosition(finalPath[i].value) + (Vector3.up * yOffset));
         }
 
         lr.positionCount = nodes.Count;
         lr.SetPositions(nodes.ToArray());
     }
 
+    private void TraceObstacles()
+    {
+        List<Vector3> nodes = new List<Vector3>();
+
+        foreach (Path p in g.paths)
+        {
+            if (p.from.obstacle && p.to.obstacle && p.direct)
+            {
+                nodes.Add(mg.GetVerticePosition(p.from.value) + (Vector3.up * yOffset));
+                nodes.Add(mg.GetVerticePosition(p.to.value) + (Vector3.up * yOffset));
+                nodes.Add(trashPoint.position);
+            }
+        }
+
+        lrObstacles.positionCount = nodes.Count;
+        lrObstacles.SetPositions(nodes.ToArray());
+    }
+
     void Start()
     {
-        lr = GetComponent<LineRenderer>();
+        lr = transform.Find("PathLineRenderer").GetComponent<LineRenderer>();
+        lrObstacles = transform.Find("ObstacleLineRenderer").GetComponent<LineRenderer>();
 
         mg = GetComponent<MeshGenerator>();
         mg.Init(width-1, height-1, magnitude, waterLevel);
@@ -236,6 +259,7 @@ public class PathFinder : MonoBehaviour
                     g.SetObstacle(new Node(int.Parse(hit.transform.name)));
 
                     UpdatePaths();
+                    TraceObstacles();
                     mg.DrawPath(finalPath, g);
                 }
             }

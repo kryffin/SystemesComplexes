@@ -64,13 +64,15 @@ public class MeshGenerator : MonoBehaviour
         float variation = Random.Range(.1f, .3f); //variation for the Perlin noise
         float offset = -0.06f; //offsetting the node's elevation to avoid sticking out to much
 
+        Transform parent = transform.Find("Nodes").transform;
+
         for (int i = 0, z = 0; z <= zSize; z++)
         {
             for (int x = 0; x <= xSize; x++)
             {
                 float y = Mathf.PerlinNoise(x * variation, z * variation) * magnitude; //returns the y position of each node
 
-                nodeObjects[i] = Instantiate(nodeObject, new Vector3(x, y + offset, z), Quaternion.identity, this.transform); //creating the nodes
+                nodeObjects[i] = Instantiate(nodeObject, new Vector3(x, y + offset, z), Quaternion.identity, parent); //creating the nodes
                 nodeObjects[i].name = i + "";
 
                 if (y <= waterLevel)
