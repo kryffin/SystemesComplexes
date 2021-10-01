@@ -767,7 +767,7 @@ MonoBehaviour:
   height: 15
   magnitude: 6
   waterLevel: 1.6
-  algorithm: 1
+  algorithm: 0
   leftClick:
     m_Name: Left Click
     m_Type: 0

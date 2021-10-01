@@ -255,6 +255,8 @@ public class PathFinder : MonoBehaviour
             {
                 if (hit.transform != null)
                 {
+                    if (int.Parse(hit.transform.name) == start.value || int.Parse(hit.transform.name) == end.value) return;
+
                     //sets the node as obstacle int.Parse(hit.transform.name)
                     g.SetObstacle(new Node(int.Parse(hit.transform.name)));
 

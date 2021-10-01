@@ -5,6 +5,8 @@ using UnityEngine;
 public class Dijkstra
 {
 
+    private const int MAX_ITERATION = 100;
+
     private Graph g;
 
     public float[] distances; //distances towards each node (index) from the starting node
@@ -122,7 +124,8 @@ public class Dijkstra
                 Q.Add(n);
 
         Node s1;
-        while (Q.Count != 0)
+        int i = 0;
+        while (Q.Count != 0/* || i < MAX_ITERATION*/)
         {
             s1 = MinDistance(Q);
             Q.Remove(s1);
@@ -131,6 +134,8 @@ public class Dijkstra
             {
                 if (p.from == s1) UpdateDistances(s1, p.to);
             }
+
+            i++;
         }
 
         //DisplayResults(source);
